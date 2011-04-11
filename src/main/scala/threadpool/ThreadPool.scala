@@ -19,15 +19,14 @@ object ThreadPool {
   }
   
   def instrumentedFixed(path : String, name : String, n : Int) : Executor = {
-    new InstrumentedThreadPool(
-      0,
-      Int.MaxValue,
+    new InstrumentedThreadPoolExecutor(path,
+      name,
+      n,
+      n,
       60l,
       TimeUnit.SECONDS,
       new LinkedBlockingQueue[Runnable],
       new NamedThreadFactory(name),
       new ThreadPoolExecutor.AbortPolicy)
   }
-  
-  def 
 }

@@ -16,11 +16,13 @@ class InstrumentedThreadPoolExecutor(path : String,
     ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,unit,workQueue,factory,handler) with 
     Instrumented {
   override protected lazy val metricsGroup = new MetricsGroup(NameBuilder(path, name))
-  protected val requestRate = metrics.meter("request", "requests", TimeUnit.SECONDS)
-  protected val rejectedRate = metrics.meter("rejected", "requests", TimeUnit.SECONDS)
-  protected val executionTimer = metrics.timer("execution")
-  protected val queueSize = metrics.gauge("queue size")(getQueue.size)
-  protected val startTime = new ThreadLocal[Long]
+  val requestRate = metrics.meter("request", "requests", TimeUnit.SECONDS)
+  val rejectedRate = metrics.meter("rejected", "requests", TimeUnit.SECONDS)
+  val executionTimer = metrics.timer("execution")
+  val queueGauge = metrics.gauge("queue size")(getQueue.size)
+  val threadGauge = metrics.gauge("threads")(getPoolSize)
+  val activeThreadGauge = metrics.gauge("active threads")(getActiveCount)
+  val startTime = new ThreadLocal[Long]
   
   setRejectedExecutionHandler(new RejectedExecutionHandler {
     def rejectedExecution(r : Runnable, executor : ThreadPoolExecutor) {
@@ -28,6 +30,11 @@ class InstrumentedThreadPoolExecutor(path : String,
       handler.rejectedExecution(r,executor)
     }
   })
+  
+  override def execute(r : Runnable) {
+    requestRate.mark
+    super.execute(r)
+  }
   
   override protected def beforeExecute(t : Thread, r : Runnable) {
     startTime.set(System.nanoTime)
