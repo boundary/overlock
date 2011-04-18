@@ -81,8 +81,7 @@ abstract class AtomicMapSpec extends Specification {
       val threads = for (i <- (0 to 5)) yield {
         new Thread {
           override def run {
-            map.getOrElseUpdate("blah", counter.incrementAndGet)
-            Thread.sleep(100)
+            map.getOrElseUpdate("blah", {Thread.sleep(100); counter.incrementAndGet})
           }
         }
       }
