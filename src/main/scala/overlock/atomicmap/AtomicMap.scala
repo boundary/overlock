@@ -1,4 +1,4 @@
-package atomicmap
+package overlock.atomicmap
 
 import scala.collection.mutable.ConcurrentMap
 import java.util.concurrent.{ConcurrentMap => JConcurrentMap, ConcurrentSkipListMap, ConcurrentHashMap}

@@ -1,4 +1,4 @@
-package atomicmap
+package overlock.atomicmap
 
 import java.util.concurrent._
 import locks._

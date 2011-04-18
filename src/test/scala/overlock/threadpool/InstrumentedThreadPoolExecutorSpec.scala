@@ -1,4 +1,4 @@
-package threadpool
+package overlock.threadpool
 
 import org.specs._
 import java.util.concurrent.atomic._

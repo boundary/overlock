@@ -1,7 +1,7 @@
 import sbt._
 import sbt.StringUtilities._
 
-class ThreadpoolProject(info : ProjectInfo) extends DefaultProject(info) {
+class OverlockProject(info : ProjectInfo) extends DefaultProject(info) {
   val codaRepo = "Coda Hale's Biznazz" at "http://repo.codahale.com/"
   val boundary = "Boundary Public Repo" at "http://maven.boundary.com/artifactory/repo"
   
