@@ -73,6 +73,12 @@ abstract class AtomicMapSpec extends Specification {
         map.put("herp", 5)
         map.get("herp") must beSome(5)
       }
+      
+      "return a new empty" in {
+        map.put("herp", 1)
+        val emptyMap = map.empty
+        emptyMap.get("herp") must beNone
+      }
     }
     
     "evaluate op only once" in {

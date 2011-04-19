@@ -5,7 +5,7 @@ class OverlockProject(info : ProjectInfo) extends DefaultProject(info) {
   val codaRepo = "Coda Hale's Biznazz" at "http://repo.codahale.com/"
   val boundary = "Boundary Public Repo" at "http://maven.boundary.com/artifactory/repo"
   override def managedStyle = ManagedStyle.Maven
-  val publishTo = "Boundary Public Repo (Publish)"
+  val publishTo = "Boundary Public Repo (Publish)" at "http://maven.boundary.com/artifactory/external"
   
   Credentials(Path.userHome / ".ivy2" / ".credentials-external", log)
   

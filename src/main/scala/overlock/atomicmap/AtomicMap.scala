@@ -6,12 +6,12 @@ import java.util.Comparator
 import org.cliffc.high_scale_lib._
 
 object AtomicMap {
-  def atomicCSLM[A,B] : AtomicMap[A,B] = {
-    new AtomicMap(new ConcurrentSkipListMap[A,OneShotThunk[B]])
+  def atomicCSLM[A,B] : AtomicNavigableMap[A,B] = {
+    new AtomicNavigableMap(new ConcurrentSkipListMap[A,OneShotThunk[B]])
   }
   
-  def atomicCSLM[A,B](comp : Comparator[A]) : AtomicMap[A,B] = {
-    new AtomicMap(new ConcurrentSkipListMap[A,OneShotThunk[B]](comp))
+  def atomicCSLM[A,B](comp : Comparator[A]) : AtomicNavigableMap[A,B] = {
+    new AtomicNavigableMap(new ConcurrentSkipListMap[A,OneShotThunk[B]](comp))
   }
   
   def atomicNBHM[A,B] : AtomicMap[A,B] = {
@@ -39,7 +39,10 @@ object AtomicMap {
   }
 }
 
-class AtomicMap[A,B](under : JConcurrentMap[A,OneShotThunk[B]]) extends ConcurrentMap[A,B] {
+class AtomicMap[A,B](u : => JConcurrentMap[A,OneShotThunk[B]]) extends ConcurrentMap[A,B] {
+  lazy val under = u
+
+  override def empty = new AtomicMap[A,B](u)
 
   override def getOrElseUpdate(key : A, op : => B) : B = {
     val t = new OneShotThunk(op)
