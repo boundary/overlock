@@ -43,7 +43,7 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
   lazy val under = u
 
   override def empty = new AtomicMap[A,B](u)
-
+  
   override def getOrElseUpdate(key : A, op : => B) : B = {
     val t = new OneShotThunk(op)
     under.putIfAbsent(key, t) match {
@@ -56,7 +56,7 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
             case Some(thunk : OneShotThunk[_]) => thunk.value.asInstanceOf[B]
             case Some(v : B) => v
             case None => //loop around to the beginning
-              getOrElseUpdate(key, op)
+              getOrElseUpdate(key, ve)
           }
         }
       case thunk : OneShotThunk[_] => thunk.value.asInstanceOf[B]
