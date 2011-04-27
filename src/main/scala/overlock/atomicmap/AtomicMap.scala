@@ -7,55 +7,65 @@ import org.cliffc.high_scale_lib._
 
 object AtomicMap {
   def atomicCSLM[A,B] : AtomicNavigableMap[A,B] = {
-    new AtomicNavigableMap(new ConcurrentSkipListMap[A,OneShotThunk[B]])
+    new AtomicNavigableMap(new ConcurrentSkipListMap[A,Any])
   }
   
   def atomicCSLM[A,B](comp : Comparator[A]) : AtomicNavigableMap[A,B] = {
-    new AtomicNavigableMap(new ConcurrentSkipListMap[A,OneShotThunk[B]](comp))
+    new AtomicNavigableMap(new ConcurrentSkipListMap[A,Any](comp))
   }
   
   def atomicNBHM[A,B] : AtomicMap[A,B] = {
-    new AtomicMap(new NonBlockingHashMap[A,OneShotThunk[B]])
+    new AtomicMap(new NonBlockingHashMap[A,Any])
   }
   
   def atomicNBHM[A,B](size : Int) : AtomicMap[A,B] = {
-    new AtomicMap(new NonBlockingHashMap[A,OneShotThunk[B]](size))
+    new AtomicMap(new NonBlockingHashMap[A,Any](size))
   }
   
   def atomicCHM[A,B] : AtomicMap[A,B] = {
-    new AtomicMap(new ConcurrentHashMap[A,OneShotThunk[B]])
+    new AtomicMap(new ConcurrentHashMap[A,Any])
   }
   
   def atomicCHM[A,B](cap : Int) : AtomicMap[A,B] = {
-    new AtomicMap(new ConcurrentHashMap[A,OneShotThunk[B]](cap))
+    new AtomicMap(new ConcurrentHashMap[A,Any](cap))
   }
   
   def atomicCHM[A,B](cap : Int, loadFactor : Float) : AtomicMap[A,B] = {
-    new AtomicMap(new ConcurrentHashMap[A,OneShotThunk[B]](cap,loadFactor))
+    new AtomicMap(new ConcurrentHashMap[A,Any](cap,loadFactor))
   }
   
   def atomicCHM[A,B](cap : Int, loadFactor : Float, concurrencyLevel : Int) : AtomicMap[A,B] = {
-    new AtomicMap(new ConcurrentHashMap[A,OneShotThunk[B]](cap, loadFactor,concurrencyLevel))
+    new AtomicMap(new ConcurrentHashMap[A,Any](cap, loadFactor,concurrencyLevel))
   }
 }
 
-class AtomicMap[A,B](u : => JConcurrentMap[A,OneShotThunk[B]]) extends ConcurrentMap[A,B] {
+class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
   lazy val under = u
 
   override def empty = new AtomicMap[A,B](u)
 
   override def getOrElseUpdate(key : A, op : => B) : B = {
     val t = new OneShotThunk(op)
-    val thunk = under.putIfAbsent(key, t) match {
-      case null => t
-      case v => v
+    under.putIfAbsent(key, t) match {
+      case null => 
+        val ve = t.value
+        if (under.replace(key, t, ve)) {
+          ve
+        } else { //will only happen if client code is mixing getOrElseUpdate and put
+          get(key) match {
+            case Some(thunk : OneShotThunk[_]) => thunk.value.asInstanceOf[B]
+            case Some(v : B) => v
+            case None => //loop around to the beginning
+              getOrElseUpdate(key, op)
+          }
+        }
+      case thunk : OneShotThunk[_] => thunk.value.asInstanceOf[B]
+      case v : B => v
     }
-    thunk.value
   }
   
   def replace(key : A, value : B) : Option[B] = {
-    val thunk = new OneShotThunk(value)
-    Option(under.replace(key,thunk)).map(_.value)
+    Option(under.replace(key,value)).map(_.asInstanceOf[B])
   }
   
   /**
@@ -63,8 +73,7 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,OneShotThunk[B]]) extends Concurren
    */
   def replace(key : A, oldVal : B, newVal : B) : Boolean = {
     val oldThunk = new OneShotThunk(oldVal)
-    val newThunk = new OneShotThunk(newVal)
-    under.replace(key, oldThunk, newThunk)
+    under.replace(key, oldThunk, newVal)
   }
   
   def remove(key : A, value : B) : Boolean = {
@@ -73,8 +82,7 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,OneShotThunk[B]]) extends Concurren
   }
   
   def putIfAbsent(key : A, value : B) : Option[B] = {
-    val thunk = new OneShotThunk(value)
-    Option(under.putIfAbsent(key,thunk)).map(_.value)
+    Option(under.putIfAbsent(key,value)).map(_.asInstanceOf[B])
   }
   
   def -=(key : A) : this.type = {
@@ -84,16 +92,15 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,OneShotThunk[B]]) extends Concurren
   
   def +=(kv : (A,B)) : this.type = {
     val (key,value) = kv
-    val thunk = new OneShotThunk(value)
-    under.put(key,thunk)
+    under.put(key,value)
     this
   }
 
   def get(key : A) : Option[B] = {
-    if (!under.containsKey(key)) {
-      None
-    } else {
-      Some(under.get(key).value)
+    Option(under.get(key)) match {
+      case None => None
+      case Some(t : OneShotThunk[_]) => Some(t.value.asInstanceOf[B])
+      case Some(v : B) => Some(v)
     }
   }
   
@@ -103,7 +110,11 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,OneShotThunk[B]]) extends Concurren
       
       def next : (A,B) = {
         val entry = iter.next
-        (entry.getKey,entry.getValue.value)
+        val key = entry.getKey
+        entry.getValue match {
+          case t : OneShotThunk[_] => (key,t.value.asInstanceOf[B])
+          case v => (key,v.asInstanceOf[B])
+        }
       }
       
       def hasNext : Boolean = {

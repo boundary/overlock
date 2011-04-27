@@ -10,6 +10,7 @@ class OneShotThunk[A](op : => A) {
   
   override def equals(other : Any) = other match {
     case o : OneShotThunk[_] => value == o.value
+    case v : A => value == v
     case _ => false
   }
 }

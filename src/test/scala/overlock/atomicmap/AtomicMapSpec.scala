@@ -27,6 +27,7 @@ abstract class AtomicMapSpec extends Specification {
       "replace(k, o, n)" in {
         map.replace("blah", 2, 1) must ==(false)
         map.put("blah", 1)
+        println("map " + map)
         map.replace("blah", 1, 2) must ==(true)
         map("blah") must ==(2)
       }
