@@ -40,27 +40,38 @@ abstract class ThroughputTest {
   println("created " + keymax + " keys")
   println("warming up JIT")
   //warmup
-  val (warmupDuration,warmupOperations) = run(1, warmupTime)
-  println("Warmup took " + warmupDuration / 1000000000.0 + "s for " + warmupOperations + " ops.")
+  val (warmupDuration,warmupOperations,warmupWrites) = run(1, warmupTime)
+  println("Warmup took " + warmupDuration / 1000000000.0 + "s for " + warmupOperations + " ops with ratio " + (warmupWrites.toDouble/warmupOperations))
   
   def run {
     println("noThreads\t" + (1 to noTrials).map("trial_" + _).mkString("\t") + "\tmean\tstddv")
     for (numThreads <- Range(threadMin, threadMax+1, threadInc)) {
       print(numThreads + "\t")
-      val throughputs = for (trial <- (1 to noTrials)) yield {
-        val (duration,operations) = run(numThreads, trialTime)
+      val (throughputs,ratios) = (for (trial <- (1 to noTrials)) yield {
+        val (duration,operations,writes) = run(numThreads, trialTime)
         val throughput = operations / (duration / 1000000000.0)
         print(throughput + "\t")
-        throughput
-      }
-      val mean = throughputs.reduceLeft(_ + _) / throughputs.size
-      val variance = throughputs.map({ n => pow(n - mean, 2) }).reduceLeft(_ + _) / throughputs.size
-      val stddev = sqrt(variance)
-      println(mean + "\t" + stddev)
+        (throughput, writes.toDouble / operations)
+      }).unzip
+      printLineStats(throughputs, false)
+      printLineStats(ratios, true)
     }
   }
   
-  protected def run(numThreads : Int, timeout : Long) : (Long,Long) = {
+  protected def printLineStats(stats : Seq[Double], printPreamble : Boolean) {
+    val preamble = stats.mkString("\t")
+    val mean = stats.reduceLeft(_ + _) / stats.size
+    val variance = stats.map({ n => pow(n - mean, 2) }).reduceLeft(_ + _) / stats.size
+    val stddev = sqrt(variance)
+    if (printPreamble) {
+      println(preamble + "\t" + mean + "\t" + stddev)
+    } else {
+      println(mean + "\t" + stddev)
+    }
+    
+  }
+  
+  protected def run(numThreads : Int, timeout : Long) : (Long,Long, Long) = {
     val map = createMap[String,String](tableSize)
     @volatile var startTime : Long = 0
     val barrier = new CyclicBarrier(numThreads, new Runnable {
@@ -79,13 +90,15 @@ abstract class ThroughputTest {
     val endTime = System.nanoTime
     val duration = endTime - startTime
     val operations = threads.map(_.operations.get).reduceLeft(_ + _)
-    (duration,operations)
+    val writes = threads.map(_.writes.get).reduceLeft(_ + _)
+    (duration,operations, writes)
   }
 }
 
 class ThroughputThread(map : ConcurrentMap[String,String], keys : Array[String], startBarrier : CyclicBarrier) extends Thread {
-  val random = new Random
+  val random = new Random()
   val operations = new AtomicLong(0)
+  val writes = new AtomicLong(0)
   override def run {
     startBarrier.await
     while (! Thread.interrupted) {
@@ -94,8 +107,10 @@ class ThroughputThread(map : ConcurrentMap[String,String], keys : Array[String],
   }
   
   protected def doOperation {
-    val key = keys(random.nextInt(keys.length))
-    map.getOrElseUpdate(key, key)
+    val i = random.nextInt(keys.length)
+/*    println(i)*/
+    val key = keys(i)
+    map.getOrElseUpdate(key, {writes.getAndIncrement; key})
     operations.getAndIncrement
   }
 }
