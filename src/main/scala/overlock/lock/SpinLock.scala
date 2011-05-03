@@ -50,9 +50,7 @@ class SpinLock {
   def waitWriter = while(writer.get) {} 
   
   def writeLock[A](op : => A) : A = {
-    if (!writer.compareAndSet(false,true)) { //lost the write race, start over
-      write(op)
-    }
+    while (!writer.compareAndSet(false,true)) { } //wait until we can exclusively acquire write
     waitReaders  //wait for all of the readers to clear
     try {
       op

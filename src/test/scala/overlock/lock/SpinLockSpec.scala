@@ -13,7 +13,7 @@ class SpinLockSpec extends Specification {
       val lock = new SpinLock
       val readerThread = new Thread {
         override def run {
-          lock.read {
+          lock.readLock {
             reads.getAndIncrement
             Thread.sleep(10)
           }
@@ -21,7 +21,7 @@ class SpinLockSpec extends Specification {
       }
       val writerThread = new Thread {
         override def run {
-          lock.write {
+          lock.writeLock {
             writes.getAndIncrement
             Thread.sleep(10)
           }
@@ -30,11 +30,34 @@ class SpinLockSpec extends Specification {
       
       readerThread.start
       writerThread.start
+      Thread.sleep(1)
       writes.get must ==(0)
       reads.get must ==(1)
       readerThread.join
       writerThread.join
       writes.get must ==(1)
+    }
+    
+    "lock out multiple writers" in {
+      val writes = new AtomicInteger(0)
+      
+      val lock = new SpinLock
+      val threads = for (n <- (0 to 1)) yield {
+        new Thread {
+          override def run {
+            lock.writeLock {
+              writes.getAndIncrement
+              Thread.sleep(10)
+            }
+          }
+        }
+      }
+      
+      threads.foreach(_.start)
+      Thread.sleep(1)
+      writes.get must ==(1)
+      threads.foreach(_.join)
+      writes.get must ==(2)
     }
   }
 }
