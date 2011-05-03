@@ -15,17 +15,25 @@
 //
 package overlock.lock
 
-import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic._
 
 /**
  * @author Dietrich Featherston
+ * @author Cliff Moon
  */
-trait SpinLock {
+trait SpinLockable {
+  val spinlock = new SpinLock
+}
+ 
+class SpinLock {
+  val writer = new AtomicBoolean(false)
   val count = new AtomicInteger(0)
+  
   /**
    * hold a counter open while performing a thunk
    */
-  def run(op: => Unit) {
+  def readLock[A](op: => A) : A = {
+    waitWriter //wait if a writer has acquired the lock
     count.incrementAndGet
     try {
       op
@@ -37,5 +45,19 @@ trait SpinLock {
   /**
    * wait for counters to clear
    */
-  def spin = while(count.get() > 0) Thread.`yield`
+  def waitReaders = while(count.get > 0) {}
+  
+  def waitWriter = while(writer.get) {} 
+  
+  def writeLock[A](op : => A) : A = {
+    if (!writer.compareAndSet(false,true)) { //lost the write race, start over
+      write(op)
+    }
+    waitReaders  //wait for all of the readers to clear
+    try {
+      op
+    } finally {
+      writer.set(false)
+    }
+  }
 }
