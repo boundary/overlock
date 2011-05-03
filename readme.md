@@ -12,7 +12,7 @@ To add overlock as a dependency to an sbt project put the following in your proj
 AtomicMap
 --------
 
-The AtomicMap trait provides atomic behavior for the `getOrElseUpdate` method.  It does so via a removal memoizer pattern, explained [here]("http://blog.boundary.com/2011/05/03/atomicmap-wrapup.html").  The AtomicMap object has factory methods for creating AtomicMap instances backed by [ConcurrentHashMap]("http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"), [ConcurrentSkipListMap]("http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentSkipListMap.html") or [NonBlockingHashMap]("https://github.com/boundary/high-scale-lib/blob/master/src/org/cliffc/high_scale_lib/NonBlockingHashMap.java").  Use like so:
+The AtomicMap trait provides atomic behavior for the `getOrElseUpdate` method.  It does so via a removal memoizer pattern, explained [here]("http://blog.boundary.com/2011/05/03/atomicmap-solutions.html").  The AtomicMap object has factory methods for creating AtomicMap instances backed by [ConcurrentHashMap]("http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html"), [ConcurrentSkipListMap]("http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentSkipListMap.html") or [NonBlockingHashMap]("https://github.com/boundary/high-scale-lib/blob/master/src/org/cliffc/high_scale_lib/NonBlockingHashMap.java").  Use like so:
 
     import overlock.atomicmap._
     
