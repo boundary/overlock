@@ -1,4 +1,4 @@
-package overlock.util
+package overlock.spinlock
 
 import java.util.concurrent.atomic.AtomicInteger
 
