@@ -19,10 +19,17 @@ package overlock.atomicmap
 import java.util.concurrent._
 import locks._
 
+object OneShotThunk {
+  def unapply[A](ost : OneShotThunk[_]) : Option[A] = {
+    ost.value match {
+      case v : A => Some(v)
+      case _ => None
+    }
+  }
+}
+
 class OneShotThunk[A](op : => A) {
-  //wonder what the scala compiler will cook up here
   lazy val value = op
-  
   
   override def equals(other : Any) = other match {
     case o : OneShotThunk[_] => value == o.value

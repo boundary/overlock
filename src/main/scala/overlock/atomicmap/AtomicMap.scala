@@ -63,25 +63,30 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
   override def getOrElseUpdate(key : A, op : => B) : B = {
     val t = new OneShotThunk(op)
     under.putIfAbsent(key, t) match {
-      case null => 
-        val ve = t.value
-        if (under.replace(key, t, ve)) {
+      case null =>
+        try {
+          val ve = t.value
+          under.replace(key, t, ve)
+          //regardless of whether or not the replace worked, we must
+          //return ve to remain within the bounds of the getOrElseUpdate
+          // contract. If a concurrent update happened, this thread
+          // ought not to see it until after returning from this call.
           ve
-        } else { //will only happen if client code is mixing getOrElseUpdate and put
-          get(key) match {
-            case Some(thunk : OneShotThunk[_]) => thunk.value.asInstanceOf[B]
-            case Some(v : B) => v
-            case None => //loop around to the beginning
-              getOrElseUpdate(key, ve)
-          }
+        } catch {
+          case ex : Exception =>
+            under.remove(key, t)
+            throw ex
         }
-      case thunk : OneShotThunk[_] => thunk.value.asInstanceOf[B]
+      case OneShotThunk(v : B) => v
       case v : B => v
     }
   }
   
   def replace(key : A, value : B) : Option[B] = {
-    Option(under.replace(key,value)).map(_.asInstanceOf[B])
+    Option(under.replace(key,value)).map {
+      case b : B => b
+      case OneShotThunk(v : B) => v
+    }
   }
   
   /**
@@ -98,7 +103,10 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
   }
   
   def putIfAbsent(key : A, value : B) : Option[B] = {
-    Option(under.putIfAbsent(key,value)).map(_.asInstanceOf[B])
+    Option(under.putIfAbsent(key,value)).map {
+      case b : B => b
+      case OneShotThunk(v : B) => v
+    }
   }
   
   def -=(key : A) : this.type = {
@@ -115,7 +123,7 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
   def get(key : A) : Option[B] = {
     Option(under.get(key)) match {
       case None => None
-      case Some(t : OneShotThunk[_]) => Some(t.value.asInstanceOf[B])
+      case Some(OneShotThunk(v : B)) => Some(v)
       case Some(v : B) => Some(v)
     }
   }
