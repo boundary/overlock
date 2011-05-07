@@ -20,7 +20,7 @@ import java.util.concurrent._
 import locks._
 
 object OneShotThunk {
-  def unapply[A](ost : OneShotThunk[_]) : Option[A] = {
+  def unapply[A](ost : OneShotThunk[A]) : Option[A] = {
     ost.value match {
       case v : A => Some(v)
       case _ => None
