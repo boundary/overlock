@@ -77,7 +77,7 @@ class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
             under.remove(key, t)
             throw ex
         }
-      case OneShotThunk(v : B) => v
+      case thunk : OneShotThunk[B] => thunk.value
       case v : B => v
     }
   }
