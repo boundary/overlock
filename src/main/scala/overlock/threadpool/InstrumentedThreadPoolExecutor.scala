@@ -30,12 +30,12 @@ class InstrumentedThreadPoolExecutor(path : String,
     handler : RejectedExecutionHandler) extends 
     ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,unit,workQueue,factory,handler) with 
     Instrumented {
-  val requestRate = metrics.meter("request", "requests", path, TimeUnit.SECONDS)
-  val rejectedRate = metrics.meter("rejected", "requests", path, TimeUnit.SECONDS)
-  val executionTimer = metrics.timer("execution", path)
-  val queueGauge = metrics.gauge("queue size", path)(getQueue.size)
-  val threadGauge = metrics.gauge("threads", path)(getPoolSize)
-  val activeThreadGauge = metrics.gauge("active threads", path)(getActiveCount)
+  val requestRate = metrics.meter("request", "requests", path + "." + name, TimeUnit.SECONDS)
+  val rejectedRate = metrics.meter("rejected", "requests", path + "." + name, TimeUnit.SECONDS)
+  val executionTimer = metrics.timer("execution", path + "." + name)
+  val queueGauge = metrics.gauge("queue size", path + "." + name)(getQueue.size)
+  val threadGauge = metrics.gauge("threads", path + "." + name)(getPoolSize)
+  val activeThreadGauge = metrics.gauge("active threads", path + "." + name)(getActiveCount)
   val startTime = new ThreadLocal[Long]
   
   setRejectedExecutionHandler(new RejectedExecutionHandler {
