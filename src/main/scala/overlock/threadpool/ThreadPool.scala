@@ -29,8 +29,7 @@ object ThreadPool {
       60l, 
       TimeUnit.SECONDS,
       new SynchronousQueue[Runnable],
-      new NamedThreadFactory(name),
-      new ThreadPoolExecutor.AbortPolicy)
+      new NamedThreadFactory(name))
   }
   
   def instrumentedFixed(path : String, name : String, n : Int) : Executor = {
@@ -41,8 +40,7 @@ object ThreadPool {
       60l,
       TimeUnit.SECONDS,
       new LinkedBlockingQueue[Runnable],
-      new NamedThreadFactory(name),
-      new ThreadPoolExecutor.AbortPolicy)
+      new NamedThreadFactory(name))
   }
   
   def instrumentedElastic(path : String, name : String, coreSize : Int, maxSize : Int) : Executor = {
@@ -54,8 +52,7 @@ object ThreadPool {
       60l,
       TimeUnit.SECONDS,
       queue,
-      new NamedThreadFactory(name),
-      new ThreadPoolExecutor.AbortPolicy)
+      new NamedThreadFactory(name))
     queue.executor = pool
     pool
   }
