@@ -26,8 +26,7 @@ class InstrumentedThreadPoolExecutor(path : String,
     keepAliveTime : Long,
     unit : TimeUnit,
     workQueue : BlockingQueue[Runnable],
-    factory : ThreadFactory,
-    handler : RejectedExecutionHandler) extends 
+    factory : ThreadFactory) extends 
     ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,unit,workQueue,factory,handler) with 
     Instrumented {
   val requestRate = metrics.meter("request", "requests", path + "." + name, TimeUnit.SECONDS)
@@ -41,7 +40,9 @@ class InstrumentedThreadPoolExecutor(path : String,
   setRejectedExecutionHandler(new RejectedExecutionHandler {
     def rejectedExecution(r : Runnable, executor : ThreadPoolExecutor) {
       rejectedRate.mark
-      handler.rejectedExecution(r,executor)
+      if (!workQueue.offer(r)) {
+        log.warn("Work queue is not accepting work.")
+      }
     }
   })
   
