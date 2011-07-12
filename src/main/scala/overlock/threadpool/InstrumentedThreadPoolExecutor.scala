@@ -18,6 +18,7 @@ package overlock.threadpool
 import java.util.concurrent._
 import com.yammer.metrics._
 import core._
+import com.codahale.logula.Logging
 
 class InstrumentedThreadPoolExecutor(path : String,
     name : String, 
@@ -27,8 +28,8 @@ class InstrumentedThreadPoolExecutor(path : String,
     unit : TimeUnit,
     workQueue : BlockingQueue[Runnable],
     factory : ThreadFactory) extends 
-    ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,unit,workQueue,factory,handler) with 
-    Instrumented {
+    ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,unit,workQueue,factory) with 
+    Instrumented with Logging {
   val requestRate = metrics.meter("request", "requests", path + "." + name, TimeUnit.SECONDS)
   val rejectedRate = metrics.meter("rejected", "requests", path + "." + name, TimeUnit.SECONDS)
   val executionTimer = metrics.timer("execution", path + "." + name)
