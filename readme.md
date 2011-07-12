@@ -7,7 +7,9 @@ To add overlock as a dependency to an sbt project put the following in your proj
 
       val boundaryPublic = "Boundary Public Repo" at "http://maven.boundary.com/artifactory/repo"
       
-      val overlock = "com.boundary" %% "overlock" % "0.3"
+      val overlock = "com.boundary" %% "overlock" % "0.5"
+      
+Overlock is currently supported on Scala 2.8.1.
 
 AtomicMap
 --------
