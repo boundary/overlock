@@ -3,13 +3,27 @@ Overlock
 
 Overlock is a concurrency utility library for Scala.  It is currently comprised of three modules: atomicmap, lock, and threadpool.  
 
+To add overlock as a dependency to a maven project, add the following dependency and repo definitions.
+
+      <dependency>
+         <groupId>com.boundary</groupId>
+         <artifactId>overlock-scala_${scala.version}</artifactId>
+         <version>0.6.0</version>
+      </dependency>
+
+      <repository>
+         <id>BoundaryPublicRepo</id>
+         <name>Boundary Public Repo</name>
+         <url>http://maven.boundary.com/artifactory/repo/</url>
+      </repository>
+
 To add overlock as a dependency to an sbt project put the following in your project file:
 
       val boundaryPublic = "Boundary Public Repo" at "http://maven.boundary.com/artifactory/repo"
       
-      val overlock = "com.boundary" %% "overlock" % "0.5"
+      val overlock = "com.boundary" %% "overlock" % "0.6.0"
       
-Overlock is currently supported on Scala 2.8.1.
+Overlock is currently supported on Scala 2.9.1.
 
 AtomicMap
 --------
