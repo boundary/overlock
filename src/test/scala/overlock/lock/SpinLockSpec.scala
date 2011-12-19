@@ -5,7 +5,7 @@ import java.util.{concurrent => juc}
 import juc.atomic._
 import java.util.concurrent.CountDownLatch
 
-class SpinLockSpec extends Specification {
+class SpinLockSpec extends SpecificationWithJUnit {
   "SpinLock" should {
     "lock out writers while there are critical readers" in {
 

@@ -3,7 +3,7 @@ package overlock.threadpool
 import org.specs._
 import java.util.concurrent._
 
-class ElasticBlockingQueueSpec extends Specification {
+class ElasticBlockingQueueSpec extends SpecificationWithJUnit {
   "ElasticBlockingQueue" should {
     "make a thread pool expand" in {
       val pool = ThreadPool.instrumentedElastic("threadpool", "2", 1, 5).asInstanceOf[InstrumentedThreadPoolExecutor]

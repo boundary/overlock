@@ -4,9 +4,8 @@ import org.specs._
 import scala.collection.mutable.ConcurrentMap
 import scala.collection.JavaConversions._
 import java.util.concurrent.atomic._
-import org.cliffc.high_scale_lib._
 
-abstract class AtomicMapSpec extends Specification {
+abstract class AtomicMapSpec extends SpecificationWithJUnit {
   def createMap[A,B] : ConcurrentMap[A,B]
   
   "AtomicMap" should {

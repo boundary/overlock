@@ -2,3 +2,6 @@ project/boot/*
 project/build/target/*
 target/*
 lib_managed/*
+*.iml
+*.ipr
+*.iws
