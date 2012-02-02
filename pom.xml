@@ -137,6 +137,7 @@
               </transformers>
               <artifactSet>
                 <excludes>
+                  <exclude>org.scala-lang:scala-library</exclude>                  
                   <exclude>junit:junit</exclude>
                 </excludes>
               </artifactSet>
