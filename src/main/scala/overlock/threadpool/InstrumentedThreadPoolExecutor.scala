@@ -17,6 +17,7 @@ package overlock.threadpool
 
 import java.util.concurrent._
 import com.yammer.metrics._
+import scala._
 import core._
 import com.codahale.logula.Logging
 
