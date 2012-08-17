@@ -8,7 +8,7 @@ To add overlock as a dependency to a maven project, add the following dependency
       <dependency>
          <groupId>com.boundary</groupId>
          <artifactId>overlock-scala_${scala.version}</artifactId>
-         <version>0.6.0</version>
+         <version>0.8.0</version>
       </dependency>
 
       <repository>
@@ -21,7 +21,7 @@ To add overlock as a dependency to an sbt project put the following in your proj
 
       val boundaryPublic = "Boundary Public Repo" at "http://maven.boundary.com/artifactory/repo"
       
-      val overlock = "com.boundary" %% "overlock" % "0.6.0"
+      val overlock = "com.boundary" %% "overlock" % "0.8.0"
       
 Overlock is currently supported on Scala 2.9.1.
 
