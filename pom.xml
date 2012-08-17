@@ -37,6 +37,11 @@
       <version>1.0.3</version>
     </dependency>
     <dependency>
+      <groupId>jsr166y</groupId>
+      <artifactId>jsr166y</artifactId>
+      <version>1.9.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.scala-tools.testing</groupId>
       <artifactId>specs_${scala.version}</artifactId>
       <version>1.6.9</version>
