@@ -37,4 +37,46 @@ class Lock {
       lock.writeLock.unlock
     }
   }
+
+  def tryLock[T](f : => T) : LockResult = tryWriteLock(f)
+
+  def tryReadLock[T](f : => T) : LockResult = {
+    if (lock.readLock().tryLock()) {
+      try {
+        f
+        LockResult.TRUE
+      } finally {
+        lock.readLock.unlock
+      }
+    } else {
+      LockResult.FALSE
+    }
+  }
+
+  def tryWriteLock[T](f : => T) : LockResult = {
+    if (lock.writeLock().tryLock()) {
+      try {
+        f
+        LockResult.TRUE
+      } finally {
+        lock.writeLock.unlock
+      }
+    } else {
+      LockResult.FALSE
+    }
+  }
 }
+
+sealed class LockResult(private val success: Boolean) {
+  def orElse[U](f : => U) {
+    if (!success) {
+      f
+    }
+  }
+}
+
+object LockResult {
+  val TRUE = new LockResult(true)
+  val FALSE = new LockResult(false)
+}
+
