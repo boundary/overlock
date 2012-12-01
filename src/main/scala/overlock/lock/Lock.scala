@@ -73,6 +73,8 @@ sealed class LockResult(private val success: Boolean) {
       f
     }
   }
+
+  def get: Boolean = success
 }
 
 object LockResult {
