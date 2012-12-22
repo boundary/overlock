@@ -28,7 +28,7 @@ Overlock is currently supported on Scala 2.9.1.
 AtomicMap
 --------
 
-The AtomicMap trait provides atomic behavior for the `getOrElseUpdate` method.  It does so via a removal memoizer pattern, explained [here](http://blog.boundary.com/2011/05/03/atomicmap-solutions.html).  The AtomicMap object has factory methods for creating AtomicMap instances backed by [ConcurrentHashMap](http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html), [ConcurrentSkipListMap](http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentSkipListMap.html) or [NonBlockingHashMap](https://github.com/boundary/high-scale-lib/blob/master/src/org/cliffc/high_scale_lib/NonBlockingHashMap.java).  Use like so:
+The AtomicMap trait provides atomic behavior for the `getOrElseUpdate` method.  It does so via a removal memoizer pattern, explained [here](http://boundary.com/blog/2011/05/03/the-atomicmap-challenge-solutions/).  The AtomicMap object has factory methods for creating AtomicMap instances backed by [ConcurrentHashMap](http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentHashMap.html), [ConcurrentSkipListMap](http://download.oracle.com/javase/6/docs/api/java/util/concurrent/ConcurrentSkipListMap.html) or [NonBlockingHashMap](https://github.com/boundary/high-scale-lib/blob/master/src/main/java/org/cliffc/high_scale_lib/NonBlockingHashMap.java).  Use like so:
 
     import overlock.atomicmap._
     
