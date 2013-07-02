@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.boundary</groupId>
   <artifactId>overlock-scala_2.9.1</artifactId>
-  <version>0.8.2</version>
+  <version>0.8.3-SNAPSHOT</version>
 
   <name>overlock</name>
   <url>http://www.boundary.com</url>
@@ -19,17 +19,12 @@
     <dependency>
       <groupId>com.yammer.metrics</groupId>
       <artifactId>metrics-core</artifactId>
-      <version>2.0.3</version>
+      <version>2.2.0</version>
     </dependency>
     <dependency>
       <groupId>com.yammer.metrics</groupId>
       <artifactId>metrics-scala_${scala.version}</artifactId>
-      <version>2.0.3</version>
-    </dependency>
-    <dependency>
-      <groupId>com.codahale</groupId>
-      <artifactId>logula_${scala.version}</artifactId>
-      <version>2.1.3</version>
+      <version>2.2.0</version>
     </dependency>
     <dependency>
       <groupId>com.boundary</groupId>
@@ -51,6 +46,17 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.5</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -178,29 +184,9 @@
 
   <repositories>
     <repository>
-      <id>central</id> 
-      <name>Maven repository</name> 
-      <url>http://repo1.maven.org/maven2</url> 
-    </repository>
-    <repository>
       <id>scala-tools.org</id>
       <name>Scala-tools Maven2 Repository</name>
       <url>http://scala-tools.org/repo-releases</url>
-    </repository>
-    <repository>
-      <id>jetlang</id>
-      <name>Jetlang</name>
-      <url>http://jetlang.googlecode.com/svn/repo/</url>
-    </repository>
-    <repository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>http://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-    <repository>
-      <id>coda-hale-repo</id>
-      <name>Coda Hale's Repo</name>
-      <url>http://repo.codahale.com/</url>
     </repository>
     <repository>
       <id>boundary-public</id>

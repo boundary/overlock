@@ -3,7 +3,7 @@ package overlock.threadpool
 import org.specs._
 import java.util.concurrent.atomic._
 
-class InstrumentedThreadPoolExecutorSpec extends Specification {
+class InstrumentedThreadPoolExecutorSpec extends SpecificationWithJUnit {
   "InstrumentedThreadPoolExecutor" should {
     "basically work" in {
       val pool = ThreadPool.instrumentedFixed("threadpool", "1", 1).asInstanceOf[InstrumentedThreadPoolExecutor]
