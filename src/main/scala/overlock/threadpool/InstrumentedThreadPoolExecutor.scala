@@ -18,8 +18,7 @@ package overlock.threadpool
 import java.util.concurrent._
 import com.yammer.metrics._
 import scala._
-import core._
-import com.codahale.logula.Logging
+import org.slf4j.LoggerFactory
 
 class InstrumentedThreadPoolExecutor(path : String,
     name : String, 
@@ -30,7 +29,8 @@ class InstrumentedThreadPoolExecutor(path : String,
     workQueue : BlockingQueue[Runnable],
     factory : ThreadFactory) extends 
     ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,unit,workQueue,factory) with 
-    Instrumented with Logging {
+    Instrumented {
+  protected lazy val log = LoggerFactory.getLogger(getClass)
   val requestRate = metrics.meter("request", "requests", path + "." + name, TimeUnit.SECONDS)
   val rejectedRate = metrics.meter("rejected", "requests", path + "." + name, TimeUnit.SECONDS)
   val executionTimer = metrics.timer("execution", path + "." + name)

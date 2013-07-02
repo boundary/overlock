@@ -17,7 +17,7 @@ package overlock.threadpool
 
 import java.util.concurrent._
 import atomic._
-import com.codahale.logula.Logging
+import org.slf4j.LoggerFactory
 
 /**
  * Based off of the NamedThreadFactory in cassandra
@@ -33,13 +33,14 @@ class NamedThreadFactory(val name : String, val priority : Int = Thread.NORM_PRI
   }
 }
 
-class ErrorLoggedThread(r : Runnable, threadName : String) extends Thread(r, threadName) with Logging {
+class ErrorLoggedThread(r : Runnable, threadName : String) extends Thread(r, threadName) {
+  protected lazy val log = LoggerFactory.getLogger(getClass)
   override def run {
     try {
       super.run
     } catch {
       case e : Throwable => 
-        log.error(e, "Exception was thrown in thread " + threadName)
+        log.error("Exception was thrown in thread " + threadName, e)
         throw e
     }
   }
