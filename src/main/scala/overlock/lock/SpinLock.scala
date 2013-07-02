@@ -15,7 +15,7 @@
 //
 package overlock.lock
 
-import java.util.concurrent.atomic._
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 /**
  * @author Dietrich Featherston
@@ -26,36 +26,29 @@ trait SpinLockable {
 }
  
 class SpinLock {
-  val writer = new AtomicBoolean(false)
-  val count = new AtomicInteger(0)
+  private[this] val lock = new ReentrantReadWriteLock
   
   /**
    * hold a counter open while performing a thunk
    */
   def readLock[A](op: => A) : A = {
-    waitWriter //wait if a writer has acquired the lock
-    count.incrementAndGet
+    val readLock = lock.readLock()
+    while (!readLock.tryLock()) {}
     try {
       op
     }
     finally {
-      count.getAndDecrement
+      readLock.unlock()
     }
   }
-  /**
-   * wait for counters to clear
-   */
-  def waitReaders = while(count.get > 0) {}
-  
-  def waitWriter = while(writer.get) {} 
   
   def writeLock[A](op : => A) : A = {
-    while (!writer.compareAndSet(false,true)) { } //wait until we can exclusively acquire write
-    waitReaders  //wait for all of the readers to clear
+    val writeLock = lock.writeLock()
+    while (!writeLock.tryLock()) {}
     try {
       op
     } finally {
-      writer.set(false)
+      writeLock.unlock()
     }
   }
 }
