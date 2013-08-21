@@ -203,6 +203,10 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <scm>
+      <connection>scm:git:git@github.com:boundary/overlock.git</connection>
+  </scm>
+
     <distributionManagement>
         <repository>
             <id>maven.boundary.com</id>
