@@ -56,7 +56,7 @@ object AtomicMap {
 }
 
 class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
-  lazy val under = u
+  val under = u
 
   override def empty = new AtomicMap[A,B](u)
   

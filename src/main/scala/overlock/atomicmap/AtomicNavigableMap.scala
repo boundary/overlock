@@ -21,7 +21,7 @@ import java.util.{NavigableMap, NavigableSet}
 
 class AtomicNavigableMap[A,B](u : => ConcurrentNavigableMap[A,Any]) extends AtomicMap[A,B](u) {
 
-  override lazy val under = u
+  override val under = u
   def comparator = under.comparator
   
   override def empty = new AtomicNavigableMap[A,B](u)
