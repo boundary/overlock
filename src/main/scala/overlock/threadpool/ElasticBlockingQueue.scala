@@ -15,8 +15,7 @@
 //
 package overlock.threadpool
 
-import java.util.concurrent._
-import jsr166y.LinkedTransferQueue
+import java.util.concurrent.{LinkedTransferQueue, ThreadPoolExecutor}
 
 class ElasticBlockingQueue[A] extends LinkedTransferQueue[A] {
   var executor : ThreadPoolExecutor = null

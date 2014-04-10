@@ -12,6 +12,7 @@
   <properties>
     <scala.version>2.9.1</scala.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <slf4j.version>1.7.6</slf4j.version>
   </properties>
 
   <dependencies>
@@ -28,12 +29,7 @@
     <dependency>
       <groupId>com.boundary</groupId>
       <artifactId>high-scale-lib</artifactId>
-      <version>1.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>jsr166y</groupId>
-      <artifactId>jsr166y</artifactId>
-      <version>1.9.1</version>
+      <version>1.0.5</version>
     </dependency>
     <dependency>
       <groupId>org.scala-tools.testing</groupId>
@@ -50,12 +46,12 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.5</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
-      <version>1.7.5</version>
+      <version>${slf4j.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -71,35 +67,14 @@
         <version>2.15.2</version>
         <executions>
           <execution>
-            <id>cmain</id>
             <goals>
               <goal>compile</goal>
-            </goals>
-            <configuration>
-              <args>
-                <arg>-make:transitive</arg>
-                <arg>-dependencyfile</arg>
-                <arg>${project.build.directory}/.main_scala_dependencies</arg>
-              </args>
-            </configuration>
-          </execution>
-          <execution>
-            <id>ctest</id>
-            <goals>
               <goal>testCompile</goal>
             </goals>
-            <configuration>
-              <args>
-                <arg>-make:transitive</arg>
-                <arg>-dependencyfile</arg>
-                <arg>${project.build.directory}/.test_scala_dependencies</arg>
-              </args>
-            </configuration>
           </execution>
         </executions>                
 	      <configuration>
           <args>
-            <arg>-optimise</arg>
             <arg>-unchecked</arg>
             <arg>-deprecation</arg>
           </args>
@@ -111,10 +86,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>2.5.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
 
@@ -139,7 +114,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
+        <version>2.2.1</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -154,7 +129,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>2.6</version>
         <configuration>
  	  <formats>
  	    <format>xml</format>
@@ -176,31 +151,18 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>2.6</version>
       </plugin>
     </plugins>
   </reporting>
 
   <repositories>
     <repository>
-      <id>scala-tools.org</id>
-      <name>Scala-tools Maven2 Repository</name>
-      <url>http://scala-tools.org/repo-releases</url>
-    </repository>
-    <repository>
       <id>boundary-public</id>
       <name>Boundary Public</name>
       <url>http://maven.boundary.com/artifactory/repo</url>
     </repository>
   </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>scala-tools.org</id>
-      <name>Scala-tools Maven2 Repository</name>
-      <url>http://scala-tools.org/repo-releases</url>
-    </pluginRepository>
-  </pluginRepositories>
 
   <scm>
       <connection>scm:git:git@github.com:boundary/overlock.git</connection>
