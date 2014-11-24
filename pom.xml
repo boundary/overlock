@@ -175,14 +175,15 @@
 
     <distributionManagement>
         <repository>
-            <id>maven.boundary.com</id>
-            <name>maven.boundary.com-releases</name>
-            <url>http://maven.boundary.com/artifactory/external</url>
+            <id>internal.deployment</id>
+            <name>Internal Deployment</name>
+            <url>https://nexus.gilt.com/nexus/content/repositories/internal-releases</url>
         </repository>
         <snapshotRepository>
-            <id>maven.boundary.com</id>
-            <name>maven.boundary.com-snapshots</name>
-            <url>http://maven.boundary.com/artifactory/external</url>
+            <id>internal.deployment</id>
+            <name>Internal Snapshots</name>
+            <url>https://nexus.gilt.com/nexus/content/repositories/internal-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+
 </project>
