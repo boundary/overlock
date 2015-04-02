@@ -1,7 +1,8 @@
 package overlock.threadpool
 
-import org.specs2.mutable._
 import java.util.concurrent.atomic._
+
+import org.specs2.mutable._
 
 class InstrumentedThreadPoolExecutorSpec extends SpecificationWithJUnit {
   "InstrumentedThreadPoolExecutor" should {

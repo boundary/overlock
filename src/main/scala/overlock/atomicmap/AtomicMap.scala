@@ -16,9 +16,11 @@
 
 package overlock.atomicmap
 
-import scala.collection.concurrent.Map
-import java.util.concurrent.{ConcurrentMap, ConcurrentSkipListMap, ConcurrentHashMap}
 import java.util.Comparator
+import java.util.concurrent.{ConcurrentHashMap, ConcurrentMap, ConcurrentSkipListMap}
+
+import scala.collection.concurrent.Map
+
 import org.cliffc.high_scale_lib._
 
 object AtomicMap {

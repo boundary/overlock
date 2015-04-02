@@ -1,8 +1,9 @@
 package overlock.lock
 
-import org.specs2.mutable._
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
+
+import org.specs2.mutable._
 
 class LockSpec extends SpecificationWithJUnit {
   "Lock" should {

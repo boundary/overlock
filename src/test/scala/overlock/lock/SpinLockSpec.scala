@@ -1,9 +1,10 @@
 package overlock.lock
 
-import org.specs2.mutable._
-import java.util.{concurrent => juc}
-import juc.atomic._
 import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic._
+import java.util.{concurrent => juc}
+
+import org.specs2.mutable._
 
 class SpinLockSpec extends SpecificationWithJUnit {
   "SpinLock" should {

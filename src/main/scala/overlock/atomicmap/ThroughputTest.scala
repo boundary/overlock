@@ -16,9 +16,9 @@
 
 package overlock.atomicmap
 
+import java.util.Random
 import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.atomic._
-import java.util.Random
 
 import scala.collection.mutable.Map
 import scala.math._

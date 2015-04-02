@@ -1,8 +1,10 @@
 package overlock.atomicmap
 
-import org.specs2.mutable._
-import scala.collection.concurrent.Map
 import java.util.concurrent.atomic._
+
+import scala.collection.concurrent.Map
+
+import org.specs2.mutable._
 
 abstract class AtomicMapSpec extends SpecificationWithJUnit {
   def createMap[A,B] : Map[A,B]

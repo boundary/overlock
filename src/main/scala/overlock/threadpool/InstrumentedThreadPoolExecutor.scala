@@ -16,6 +16,7 @@
 package overlock.threadpool
 
 import java.util.concurrent._
+
 import nl.grons.metrics.scala._
 import org.slf4j.LoggerFactory
 

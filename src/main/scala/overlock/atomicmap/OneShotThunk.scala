@@ -16,9 +16,6 @@
 
 package overlock.atomicmap
 
-import java.util.concurrent._
-import locks._
-
 object OneShotThunk {
   def unapply[A](ost : OneShotThunk[A]) : Option[A] = {
     ost.value match {
