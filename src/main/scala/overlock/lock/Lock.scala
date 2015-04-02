@@ -67,7 +67,7 @@ class Lock {
   }
 }
 
-sealed class LockResult(private val success: Boolean) {
+sealed case class LockResult(private val success: Boolean) {
   def orElse[U](f : => U) {
     if (!success) {
       f
@@ -78,7 +78,7 @@ sealed class LockResult(private val success: Boolean) {
 }
 
 object LockResult {
-  val TRUE = new LockResult(true)
-  val FALSE = new LockResult(false)
+  val TRUE = LockResult(true)
+  val FALSE = LockResult(false)
 }
 

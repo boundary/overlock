@@ -16,11 +16,11 @@
 
 package overlock.atomicmap
 
-import scala.collection.mutable.ConcurrentMap
-import java.util.{concurrent => juc}
-import juc.atomic._
-import juc.CyclicBarrier
 import java.util.Random
+import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.atomic._
+
+import scala.collection.mutable.Map
 import scala.math._
 
 object ThroughputTest {
@@ -35,7 +35,7 @@ object ThroughputTest {
 }
 
 abstract class ThroughputTest {
-  def createMap[A,B](size : Int) : ConcurrentMap[A,B]
+  def createMap[A,B](size : Int) : Map[A,B]
   
   val threadMin = 1
   val threadMax = 8
@@ -111,7 +111,7 @@ abstract class ThroughputTest {
   }
 }
 
-class ThroughputThread(map : ConcurrentMap[String,String], keys : Array[String], startBarrier : CyclicBarrier) extends Thread {
+class ThroughputThread(map : Map[String,String], keys : Array[String], startBarrier : CyclicBarrier) extends Thread {
   val random = new Random()
   val operations = new AtomicLong(0)
   val writes = new AtomicLong(0)

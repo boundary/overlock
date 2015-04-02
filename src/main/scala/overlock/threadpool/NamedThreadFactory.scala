@@ -16,7 +16,8 @@
 package overlock.threadpool
 
 import java.util.concurrent._
-import atomic._
+import java.util.concurrent.atomic._
+
 import org.slf4j.LoggerFactory
 
 /**

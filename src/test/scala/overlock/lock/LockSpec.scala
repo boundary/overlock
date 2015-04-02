@@ -1,19 +1,16 @@
 package overlock.lock
 
-import org.specs._
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
+
+import org.specs2.mutable._
 
 class LockSpec extends SpecificationWithJUnit {
   "Lock" should {
     "acquire a lock with tryLock if it's not already held" in {
       val lock = new Lock
 
-      lock.tryWriteLock {
-        true must beTrue
-      }.orElse {
-        fail("Welp. You should have locked.")
-      }
+      lock.tryWriteLock(()) must beEqualTo(LockResult.TRUE)
     }
 
     "not acquire a lock with tryLock if it's already held" in {
@@ -33,11 +30,7 @@ class LockSpec extends SpecificationWithJUnit {
       holdUp.await()
 
       try {
-        lock.tryWriteLock {
-          fail("Shouldn't be able to get here")
-        }.orElse {
-          true must beTrue
-        }
+        lock.tryWriteLock(()) must beEqualTo(LockResult.FALSE)
       } finally {
         done.set(true)
       }
@@ -56,19 +49,14 @@ class LockSpec extends SpecificationWithJUnit {
               holdUp.countDown()
               while (!done.get) { /*spin, spin, spin*/}
             }.orElse {
-              fail("I want to lock but it didn't let me")
+              failure("I want to lock but it didn't let me")
             }
           }
         }
 
       readers.foreach(t => t.start())
       holdUp.await()
-      lock.tryWriteLock {
-        fail("Shouldn't be able to write lock")
-      }.orElse {
-        // Success
-        true must beTrue
-      }
+      lock.tryWriteLock(()) must beEqualTo(LockResult.FALSE)
     }
 
     "be able to held by a single writer" in {
@@ -82,7 +70,7 @@ class LockSpec extends SpecificationWithJUnit {
             holdUp.countDown()
             while (!done.get) { /*keep on swimming, keep on swimming*/ }
           }.orElse {
-            fail("Couldn't acquire a write lock")
+            failure("Couldn't acquire a write lock")
           }
         }
       }
@@ -90,12 +78,7 @@ class LockSpec extends SpecificationWithJUnit {
       writer.start()
       holdUp.await()
 
-      lock.tryReadLock {
-        fail("Shouldn't be able to acquire a read lock while writing")
-      }.orElse {
-        // Great Success!
-        true must beTrue
-      }
+      lock.tryWriteLock(()) must beEqualTo(LockResult.FALSE)
     }
   }
 }

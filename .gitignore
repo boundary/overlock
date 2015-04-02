@@ -1,5 +1,6 @@
 project/boot/*
 project/build/target/*
+project/target/*
 target/*
 lib_managed/*
 .idea/

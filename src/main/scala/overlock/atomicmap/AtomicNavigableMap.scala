@@ -16,8 +16,7 @@
 
 package overlock.atomicmap
 
-import java.util.concurrent.{ConcurrentNavigableMap, ConcurrentSkipListMap}
-import java.util.{NavigableMap, NavigableSet}
+import java.util.concurrent.ConcurrentNavigableMap
 
 class AtomicNavigableMap[A,B](u : => ConcurrentNavigableMap[A,Any]) extends AtomicMap[A,B](u) {
 
