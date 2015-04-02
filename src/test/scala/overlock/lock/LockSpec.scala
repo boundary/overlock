@@ -1,6 +1,6 @@
 package overlock.lock
 
-import org.specs._
+import org.specs2.mutable._
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -12,7 +12,7 @@ class LockSpec extends SpecificationWithJUnit {
       lock.tryWriteLock {
         true must beTrue
       }.orElse {
-        fail("Welp. You should have locked.")
+        failure("Welp. You should have locked.")
       }
     }
 
@@ -34,7 +34,7 @@ class LockSpec extends SpecificationWithJUnit {
 
       try {
         lock.tryWriteLock {
-          fail("Shouldn't be able to get here")
+          failure("Shouldn't be able to get here")
         }.orElse {
           true must beTrue
         }
@@ -56,7 +56,7 @@ class LockSpec extends SpecificationWithJUnit {
               holdUp.countDown()
               while (!done.get) { /*spin, spin, spin*/}
             }.orElse {
-              fail("I want to lock but it didn't let me")
+              failure("I want to lock but it didn't let me")
             }
           }
         }
@@ -64,7 +64,7 @@ class LockSpec extends SpecificationWithJUnit {
       readers.foreach(t => t.start())
       holdUp.await()
       lock.tryWriteLock {
-        fail("Shouldn't be able to write lock")
+        failure("Shouldn't be able to write lock")
       }.orElse {
         // Success
         true must beTrue
@@ -82,7 +82,7 @@ class LockSpec extends SpecificationWithJUnit {
             holdUp.countDown()
             while (!done.get) { /*keep on swimming, keep on swimming*/ }
           }.orElse {
-            fail("Couldn't acquire a write lock")
+            failure("Couldn't acquire a write lock")
           }
         }
       }
@@ -91,7 +91,7 @@ class LockSpec extends SpecificationWithJUnit {
       holdUp.await()
 
       lock.tryReadLock {
-        fail("Shouldn't be able to acquire a read lock while writing")
+        failure("Shouldn't be able to acquire a read lock while writing")
       }.orElse {
         // Great Success!
         true must beTrue

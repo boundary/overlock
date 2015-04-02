@@ -16,8 +16,8 @@
 
 package overlock.atomicmap
 
-import scala.collection.mutable.ConcurrentMap
-import java.util.concurrent.{ConcurrentMap => JConcurrentMap, ConcurrentSkipListMap, ConcurrentHashMap}
+import scala.collection.concurrent.Map
+import java.util.concurrent.{ConcurrentMap, ConcurrentSkipListMap, ConcurrentHashMap}
 import java.util.Comparator
 import org.cliffc.high_scale_lib._
 
@@ -55,7 +55,7 @@ object AtomicMap {
   }
 }
 
-class AtomicMap[A,B](u : => JConcurrentMap[A,Any]) extends ConcurrentMap[A,B] {
+class AtomicMap[A,B](u : => ConcurrentMap[A,Any]) extends Map[A,B] {
   val under = u
 
   override def empty = new AtomicMap[A,B](u)
