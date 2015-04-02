@@ -1,6 +1,6 @@
 package overlock.threadpool
 
-import org.specs._
+import org.specs2.mutable._
 import java.util.concurrent.atomic._
 
 class InstrumentedThreadPoolExecutorSpec extends SpecificationWithJUnit {
@@ -14,13 +14,13 @@ class InstrumentedThreadPoolExecutorSpec extends SpecificationWithJUnit {
         }
       })
       Thread.sleep(100)
-      counter.get must ==(1)
-      pool.threadGauge.value must ==(1)
-      pool.queueGauge.value must ==(0)
-      pool.requestRate.count must ==(1)
-      pool.rejectedRate.count must ==(0)
-      pool.executionTimer.count must ==(1)
-      pool.activeThreadGauge.value must ==(0)
+      counter.get must beEqualTo(1)
+      pool.threadGauge.value must beEqualTo(1)
+      pool.queueGauge.value must beEqualTo(0)
+      pool.requestRate.count must beEqualTo(1)
+      pool.rejectedRate.count must beEqualTo(0)
+      pool.executionTimer.count must beEqualTo(1)
+      pool.activeThreadGauge.value must beEqualTo(0)
     }
   }
 }

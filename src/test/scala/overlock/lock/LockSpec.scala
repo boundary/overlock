@@ -9,11 +9,7 @@ class LockSpec extends SpecificationWithJUnit {
     "acquire a lock with tryLock if it's not already held" in {
       val lock = new Lock
 
-      lock.tryWriteLock {
-        true must beTrue
-      }.orElse {
-        failure("Welp. You should have locked.")
-      }
+      lock.tryWriteLock(()) must beEqualTo(LockResult.TRUE)
     }
 
     "not acquire a lock with tryLock if it's already held" in {
@@ -33,11 +29,7 @@ class LockSpec extends SpecificationWithJUnit {
       holdUp.await()
 
       try {
-        lock.tryWriteLock {
-          failure("Shouldn't be able to get here")
-        }.orElse {
-          true must beTrue
-        }
+        lock.tryWriteLock(()) must beEqualTo(LockResult.FALSE)
       } finally {
         done.set(true)
       }
@@ -63,12 +55,7 @@ class LockSpec extends SpecificationWithJUnit {
 
       readers.foreach(t => t.start())
       holdUp.await()
-      lock.tryWriteLock {
-        failure("Shouldn't be able to write lock")
-      }.orElse {
-        // Success
-        true must beTrue
-      }
+      lock.tryWriteLock(()) must beEqualTo(LockResult.FALSE)
     }
 
     "be able to held by a single writer" in {
@@ -90,12 +77,7 @@ class LockSpec extends SpecificationWithJUnit {
       writer.start()
       holdUp.await()
 
-      lock.tryReadLock {
-        failure("Shouldn't be able to acquire a read lock while writing")
-      }.orElse {
-        // Great Success!
-        true must beTrue
-      }
+      lock.tryWriteLock(()) must beEqualTo(LockResult.FALSE)
     }
   }
 }
