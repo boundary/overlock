@@ -1,22 +1,20 @@
 package overlock.lock
 
-import org.specs._
+import org.specs2.mutable._
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicBoolean
 
-class LockSpec extends SpecificationWithJUnit {
+class LockSpec extends Specification {
   "Lock" should {
     "acquire a lock with tryLock if it's not already held" in {
       val lock = new Lock
 
       lock.tryWriteLock {
-        true must beTrue
-      }.orElse {
-        fail("Welp. You should have locked.")
-      }
+        true
+      }.get must beTrue
     }
 
-    "not acquire a lock with tryLock if it's already held" in {
+    "not acquire a lock with tryLock if it's already held" >> {
       val done = new AtomicBoolean(false)
       val lock = new Lock
       val holdUp = new CountDownLatch(1)
@@ -25,7 +23,7 @@ class LockSpec extends SpecificationWithJUnit {
         override def run() {
           lock.writeLock {
             holdUp.countDown()
-            while (!done.get()) { /*do nothing*/ }
+            while (!done.get()) {  }
           }
         }
       }
@@ -34,16 +32,14 @@ class LockSpec extends SpecificationWithJUnit {
 
       try {
         lock.tryWriteLock {
-          fail("Shouldn't be able to get here")
-        }.orElse {
-          true must beTrue
-        }
+          throw new RuntimeException("Shouldn't be able to get here")
+        }.get must beFalse
       } finally {
         done.set(true)
       }
     }
 
-    "be able to be held by multiple readers" in {
+    "be able to be held by multiple readers" >> {
       val numReaders = 5
       val done = new AtomicBoolean(false)
       val holdUp = new CountDownLatch(numReaders)
@@ -54,9 +50,9 @@ class LockSpec extends SpecificationWithJUnit {
           override def run() {
             lock.tryReadLock {
               holdUp.countDown()
-              while (!done.get) { /*spin, spin, spin*/}
+              while (!done.get) { }
             }.orElse {
-              fail("I want to lock but it didn't let me")
+              ko("I want to lock but it didn't let me")
             }
           }
         }
@@ -64,14 +60,11 @@ class LockSpec extends SpecificationWithJUnit {
       readers.foreach(t => t.start())
       holdUp.await()
       lock.tryWriteLock {
-        fail("Shouldn't be able to write lock")
-      }.orElse {
-        // Success
-        true must beTrue
-      }
+        ko("Shouldn't be able to write lock")
+      }.get must beFalse
     }
 
-    "be able to held by a single writer" in {
+    "be able to held by a single writer" >> {
       val holdUp = new CountDownLatch(1)
       val done = new AtomicBoolean(false)
       val lock = new Lock
@@ -80,9 +73,9 @@ class LockSpec extends SpecificationWithJUnit {
         override def run() {
           lock.tryWriteLock {
             holdUp.countDown()
-            while (!done.get) { /*keep on swimming, keep on swimming*/ }
+            while (!done.get) { }
           }.orElse {
-            fail("Couldn't acquire a write lock")
+            ko("Couldn't acquire a write lock")
           }
         }
       }
@@ -91,11 +84,8 @@ class LockSpec extends SpecificationWithJUnit {
       holdUp.await()
 
       lock.tryReadLock {
-        fail("Shouldn't be able to acquire a read lock while writing")
-      }.orElse {
-        // Great Success!
-        true must beTrue
-      }
+        false
+      }.get must beFalse
     }
   }
 }

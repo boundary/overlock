@@ -1,11 +1,11 @@
 package overlock.threadpool
 
-import org.specs._
+import org.specs2.mutable._
 import java.util.concurrent.atomic._
 
-class InstrumentedThreadPoolExecutorSpec extends SpecificationWithJUnit {
-  "InstrumentedThreadPoolExecutor" should {
-    "basically work" in {
+class InstrumentedThreadPoolExecutorSpec extends Specification {
+  "InstrumentedThreadPoolExecutor" >> {
+    "basically work" >> {
       val pool = ThreadPool.instrumentedFixed("threadpool", "1", 1).asInstanceOf[InstrumentedThreadPoolExecutor]
       val counter = new AtomicInteger(0)
       pool.execute(new Runnable {
@@ -14,13 +14,13 @@ class InstrumentedThreadPoolExecutorSpec extends SpecificationWithJUnit {
         }
       })
       Thread.sleep(100)
-      counter.get must ==(1)
-      pool.threadGauge.value must ==(1)
-      pool.queueGauge.value must ==(0)
-      pool.requestRate.count must ==(1)
-      pool.rejectedRate.count must ==(0)
-      pool.executionTimer.count must ==(1)
-      pool.activeThreadGauge.value must ==(0)
+      counter.get mustEqual 1
+      pool.threadGauge.value mustEqual 1
+      pool.queueGauge.value mustEqual 0
+      pool.requestRate.count mustEqual 1
+      pool.rejectedRate.count mustEqual 0
+      pool.executionTimer.count mustEqual 1
+      pool.activeThreadGauge.value mustEqual 0
     }
   }
 }
