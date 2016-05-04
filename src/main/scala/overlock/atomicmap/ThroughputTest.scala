@@ -16,7 +16,7 @@
 
 package overlock.atomicmap
 
-import scala.collection.mutable.ConcurrentMap
+import scala.collection.concurrent.{Map => ScalaConcurrentMap}
 import java.util.{concurrent => juc}
 import juc.atomic._
 import juc.CyclicBarrier
@@ -24,19 +24,19 @@ import java.util.Random
 import scala.math._
 
 object ThroughputTest {
-  
+
   def main(args : Array[String]) {
     val test = new ThroughputTest {
       override def createMap[A,B](size : Int) = AtomicMap.atomicNBHM(size)
     }
-    
+
     test.run
   }
 }
 
 abstract class ThroughputTest {
-  def createMap[A,B](size : Int) : ConcurrentMap[A,B]
-  
+  def createMap[A,B](size : Int) : ScalaConcurrentMap[A,B]
+
   val threadMin = 1
   val threadMax = 8
   val threadInc = 1
@@ -44,10 +44,10 @@ abstract class ThroughputTest {
   val trialTime = 5000
   val noTrials = 20
   val warmupTime = 30000
-  
+
   var keymax = 1
   while (keymax < tableSize) { keymax <<= 1 }
-  
+
   val keys = new Array[String](keymax)
   for(i <- (0 until keymax)) {
     keys(i) = i + "abc" + (i*17+123)
@@ -58,7 +58,7 @@ abstract class ThroughputTest {
   //warmup
   val (warmupDuration,warmupOperations,warmupWrites) = run(1, warmupTime)
   println("Warmup took " + warmupDuration / 1000000000.0 + "s for " + warmupOperations + " ops with ratio " + (warmupWrites.toDouble/warmupOperations))
-  
+
   def run {
     println("noThreads\t" + (1 to noTrials).map("trial_" + _).mkString("\t") + "\tmean\tstddv")
     for (numThreads <- Range(threadMin, threadMax+1, threadInc)) {
@@ -73,7 +73,7 @@ abstract class ThroughputTest {
       printLineStats(ratios, true)
     }
   }
-  
+
   protected def printLineStats(stats : Seq[Double], printPreamble : Boolean) {
     val preamble = stats.mkString("\t")
     val mean = stats.reduceLeft(_ + _) / stats.size
@@ -84,9 +84,9 @@ abstract class ThroughputTest {
     } else {
       println(mean + "\t" + stddev)
     }
-    
+
   }
-  
+
   protected def run(numThreads : Int, timeout : Long) : (Long,Long, Long) = {
     val map = createMap[String,String](tableSize)
     @volatile var startTime : Long = 0
@@ -111,7 +111,7 @@ abstract class ThroughputTest {
   }
 }
 
-class ThroughputThread(map : ConcurrentMap[String,String], keys : Array[String], startBarrier : CyclicBarrier) extends Thread {
+class ThroughputThread(map : ScalaConcurrentMap[String,String], keys : Array[String], startBarrier : CyclicBarrier) extends Thread {
   val random = new Random()
   val operations = new AtomicLong(0)
   val writes = new AtomicLong(0)
@@ -121,7 +121,7 @@ class ThroughputThread(map : ConcurrentMap[String,String], keys : Array[String],
       doOperation
     }
   }
-  
+
   protected def doOperation {
     val i = random.nextInt(keys.length)
 /*    println(i)*/
